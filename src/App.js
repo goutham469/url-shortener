@@ -37,7 +37,7 @@ function App() {
 
         if(data.status == true)
         {
-          setCompressedLink(`${process.env.REACT_APP_SERVER_URL}` + data.tinyUrl)
+          setCompressedLink(`${process.env.REACT_APP_SERVER_URL}` +"/"+ data.tinyUrl)
         }
         else
         {
@@ -88,7 +88,7 @@ function App() {
       <div style={{display:"flex",justifyContent:"space-around"}}>
         <form className='Main-form'>
           <input type='text' onChange={(event)=>setLink(event.target.value)} placeholder='paste the link here'/><br/>
-          <label>{compressedLink?compressedLink:"paste a link above"}</label><br/>
+          <label style={{backgroundColor:"white",borderRadius:"5px",padding:"3px",margin:"10px"}}>{compressedLink?compressedLink:"paste a link above"}</label><br/>
           <button onClick={(event)=>CompressLink(event)}>Compress link</button>
         </form>
       </div>
