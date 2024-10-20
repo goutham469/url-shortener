@@ -4,24 +4,26 @@ const CheckUser = async(req,res,next) =>{
     {
         next()
     }
-
-    
-    let response = await req.usersCollection.find({email:req.body.email}).toArray()
-
-    if(response[0])
+    else
     {
-        if(response[0].credits > 0)
+        let response = await req.usersCollection.find({email:req.body.email}).toArray()
+
+        if(response[0])
         {
-            next();
+            if(response[0].credits > 0)
+            {
+                next();
+            }
+            else
+            {
+                res.send({status:false , message:"Your credits are over.Recharge to continue services."})
+            }
         }
         else
         {
-            res.send({status:false , message:"Your credits are over.Recharge to continue services."})
+            res.send({status:false , message:"You are not an Authorized user. Create a a/c on our site ."})
         }
-    }
-    else
-    {
-        res.send({status:false , message:"You are not an Authorized user. Create a a/c on our site ."})
+
     }
 }
 

@@ -2,8 +2,8 @@ POST http://localhost:4000/create-link
 Content-Type: application/json
 
 {
-    "url" : "https://doughtflow.netlify.app/",
-    "owner" : "goutham"
+    "url" : "https://github.com/goutham469/url-shortener/tree/server",
+    "api":false
 }
 
 ###

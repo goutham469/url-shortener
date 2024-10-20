@@ -83,7 +83,10 @@ app.post('/create-link',CheckUser ,async(req,res)=>{
 
     let response = await req.urlsCollection.insertOne({key : newKey , url:req.body.url , views:0, owner:req.body.owner , ipAdrs:[] , stats:{daily:[] , monthly:[]}})
 
-    res.send(response)
+    res.send({
+        status:true,
+        tinyUrl : newKey
+    })
 })
 
 app.post('/login' , async (req,res)=>{
