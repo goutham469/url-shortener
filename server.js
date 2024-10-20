@@ -1,10 +1,16 @@
 const { error } = require('console')
 const exp = require('express')
+const cors = require('cors')
 const DBAccess = require('./MiddleWares/DBAccess')
 const UpdateStats = require('./MiddleWares/UpdateStats')
 const CheckUser = require('./MiddleWares/CheckUser')
 const APICounter = require('./MiddleWares/APICounter')
+
+
+
 const app = exp()
+app.use(cors())
+
 require('dotenv').config()
 const mclient = require('mongodb').MongoClient
 
@@ -67,7 +73,7 @@ function incrementSequence(seq) {
 }
 
 app.post('/create-link',CheckUser ,async(req,res)=>{
-    
+
     let currentState = await req.metaCollection.find({id:1}).toArray()
     currentState = currentState[0]
     currentState = currentState.counter;
