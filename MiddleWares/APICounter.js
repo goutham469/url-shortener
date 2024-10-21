@@ -64,7 +64,7 @@ const APICounter = async (req, res, next) => {
         await req.metaCollection.updateOne({ id: 1 }, { $set: { api: data } });
     }
 
-    res.send("wait for some time , MongoDB connection not established.")
+    next()
 }
 
 module.exports = APICounter;
