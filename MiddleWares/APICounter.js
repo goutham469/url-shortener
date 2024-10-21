@@ -1,4 +1,4 @@
-function getUserIP(req) {
+function getClientIP(req) {
     let xForwardedFor = req.headers['x-forwarded-for'];
     
     if (xForwardedFor) {
@@ -64,7 +64,7 @@ const APICounter = async (req, res, next) => {
         await req.metaCollection.updateOne({ id: 1 }, { $set: { api: data } });
     }
 
-    next();
+    res.send("wait for some time , MongoDB connection not established.")
 }
 
 module.exports = APICounter;

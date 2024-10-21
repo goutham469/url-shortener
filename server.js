@@ -27,7 +27,7 @@ mclient.connect(process.env.MONGO_URL).then(client => {
 
     console.log("mongoDB connection success !")
 }).catch((err) => {
-    console.log("error during connection with MongoDB")
+    console.log("error during connection with MongoDB \n",err)
 })
 
 app.use(exp.json())
