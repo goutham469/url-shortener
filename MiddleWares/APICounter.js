@@ -1,44 +1,63 @@
+const getClientIP = (req) => {
+    return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+};
+
 const APICounter = async (req, res, next) => {
-    try {
-        const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        const today = new Date();
-        const dateStr = `${today.getDate()}/${today.getMonth()}/${today.getFullYear()}`;
-        const monthStr = `${today.getMonth()}/${today.getFullYear()}`;
+    let userIPAddress = getClientIP(req)
 
-        if (req.metaCollection) {
-            // Increment total API calls
-            await req.metaCollection.updateOne(
-                { id: 1 },
-                { $inc: { "api.apiCalls": 1 } }
-            );
 
-            // Update IP address tracking
-            await req.metaCollection.updateOne(
-                { id: 1, "api.ipAdrs.ip": userIP },
-                { $inc: { "api.ipAdrs.$.views": 1 } },
-                { upsert: true }  // Creates a new entry if IP does not exist
-            );
+    if (req.metaCollection) {
+        await req.metaCollection.updateOne({ id: 1 }, { $inc: { apiCalls: 1 } });
 
-            // Update daily stats
-            await req.metaCollection.updateOne(
-                { id: 1, "api.stats.daily.date": dateStr },
-                { $inc: { "api.stats.daily.$.views": 1 } },
-                { upsert: true }
-            );
+        let data = await req.metaCollection.findOne({ id: 1 });
+        data = data.api;
 
-            // Update monthly stats
-            await req.metaCollection.updateOne(
-                { id: 1, "api.stats.monthly.month": monthStr },
-                { $inc: { "api.stats.monthly.$.views": 1 } },
-                { upsert: true }
-            );
+        // IP Address update
+        let status = false;
+        for (const [idx, obj] of data.ipAdrs.entries()) {
+            if (obj.ip === userIPAddress) {
+                data.ipAdrs[idx].views += 1;
+                status = true;
+                break; // Exit the loop once IP is found and updated
+            }
+        }
+        if (!status) {
+            let userIP = userIPAddress;
+            data.ipAdrs.push({ ip: userIP, views: 1 });
         }
 
-        next();
-    } catch (error) {
-        console.error("Error tracking API call:", error);
-        next(error);
+        // Day update
+        let today = new Date().getDate() + "/" + new Date().getMonth() + '/' + new Date().getFullYear();
+        status = false;
+        for (const [idx, obj] of data.stats.daily.entries()) {
+            if (obj.date === today) {
+                data.stats.daily[idx].views += 1;
+                status = true;
+                break; // Exit the loop once the date is found and updated
+            }
+        }
+        if (!status) {
+            data.stats.daily.push({ date: today, views: 1 });
+        }
+
+        // Month update
+        let month = new Date().getMonth() + '/' + new Date().getFullYear();
+        status = false;
+        for (const [idx, obj] of data.stats.monthly.entries()) {
+            if (obj.month === month) {
+                data.stats.monthly[idx].views += 1;
+                status = true;
+                break; // Exit the loop once the month is found and updated
+            }
+        }
+        if (!status) {
+            data.stats.monthly.push({ month: month, views: 1 });
+        }
+
+        await req.metaCollection.updateOne({ id: 1 }, { $set: { api: data } });
     }
-};
+
+    next();
+}
 
 module.exports = APICounter;
