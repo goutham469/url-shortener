@@ -1,65 +1,56 @@
-const APICounter = async (req,res,next) =>{
-    if(req.metaCollection)
-    {
-        await req.metaCollection.updateOne({id:1},{$inc:{apiCalls:1}})
+const APICounter = async (req, res, next) => {
+    if (req.metaCollection) {
+        await req.metaCollection.updateOne({ id: 1 }, { $inc: { apiCalls: 1 } });
 
-        let data = await req.metaCollection.find({id:1}).toArray()
-        data = data[0].api
+        let data = await req.metaCollection.findOne({ id: 1 });
+        data = data.api;
 
-
-        // ip Address update
+        // IP Address update
         let status = false;
-        data.ipAdrs.forEach(async (obj,idx) =>{
-            if(obj.ip == req.ip)
-            {
+        for (const [idx, obj] of data.ipAdrs.entries()) {
+            if (obj.ip === req.ip) {
                 data.ipAdrs[idx].views += 1;
                 status = true;
-                return;
+                break; // Exit the loop once IP is found and updated
             }
-        })
-        if(!status)
-        {
-            let userIP = req.ip
-            data.ipAdrs.push({ip:userIP , views:1})
+        }
+        if (!status) {
+            let userIP = req.ip;
+            data.ipAdrs.push({ ip: userIP, views: 1 });
         }
 
-        // day update
-        let today = new Date().getDate() + "/" + new Date().getMonth() + '/' + new Date().getFullYear()
+        // Day update
+        let today = new Date().getDate() + "/" + new Date().getMonth() + '/' + new Date().getFullYear();
         status = false;
-        data.stats.daily.forEach(async(obj , idx)=>{
-            if(obj.date == today)
-            {
-                status = true;
+        for (const [idx, obj] of data.stats.daily.entries()) {
+            if (obj.date === today) {
                 data.stats.daily[idx].views += 1;
-                return
-            }
-        })
-        if(!status)
-        {
-            data.stats.daily.push({date:today , views:1})
-        }
-
-        // month update
-        let month = new Date().getMonth() + '/' + new Date().getFullYear()
-        status = false;
-        data.stats.monthly.forEach(async(obj , idx)=>{
-            if(obj.month == month)
-            {
                 status = true;
-                data.stats.monthly[idx].views += 1;
-                return
+                break; // Exit the loop once the date is found and updated
             }
-        })
-
-        if(!status)
-        {
-            data.stats.monthly.push({month:month , views:1})
+        }
+        if (!status) {
+            data.stats.daily.push({ date: today, views: 1 });
         }
 
-        await req.metaCollection.updateOne({id:1} , {$set:{api:data}})
+        // Month update
+        let month = new Date().getMonth() + '/' + new Date().getFullYear();
+        status = false;
+        for (const [idx, obj] of data.stats.monthly.entries()) {
+            if (obj.month === month) {
+                data.stats.monthly[idx].views += 1;
+                status = true;
+                break; // Exit the loop once the month is found and updated
+            }
+        }
+        if (!status) {
+            data.stats.monthly.push({ month: month, views: 1 });
+        }
+
+        await req.metaCollection.updateOne({ id: 1 }, { $set: { api: data } });
     }
 
-    next()
+    next();
 }
 
 module.exports = APICounter;
