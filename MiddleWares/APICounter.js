@@ -1,6 +1,13 @@
-const getClientIP = (req) => {
-    return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-};
+function getUserIP(req) {
+    let xForwardedFor = req.headers['x-forwarded-for'];
+    
+    if (xForwardedFor) {
+        let ipList = xForwardedFor.split(',');
+        return ipList[0].trim(); 
+    } else {
+        return req.connection.remoteAddress;
+    }
+}
 
 const APICounter = async (req, res, next) => {
     let userIPAddress = getClientIP(req)
