@@ -1,0 +1,67 @@
+.statistics-container {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 800px;
+    margin-top: 200px;
+  }
+  
+  .statistics-title {
+    text-align: center;
+    color: #333;
+    margin: 20px;
+  }
+  
+  .overview {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  
+  .stat-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+    width: 45%;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4CAF50;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    margin: 15px 0;
+    color: #333;
+  }
+  
+  .ip-list, .daily-stats, .monthly-stats {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .ip-item, .daily-item, .monthly-item {
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .ip-address, .daily-date, .monthly-month {
+    font-weight: bold;
+  }
+  
+  .ip-views, .daily-views, .monthly-views {
+    color: #777;
+  }
+  
+  .card1{
+    margin: 10px;
+  }
