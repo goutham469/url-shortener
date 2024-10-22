@@ -10,8 +10,13 @@ function getClientIP(req) {
 }
 
 const APICounter = async (req, res, next) => {
-    let userIPAddress = getClientIP(req)
 
+    if(req.path === "/")
+    {
+        next();
+    }
+
+    let userIPAddress = getClientIP(req)
 
     if (req.metaCollection) {
         await req.metaCollection.updateOne({ id: 1 }, { $inc: { apiCalls: 1 } });
