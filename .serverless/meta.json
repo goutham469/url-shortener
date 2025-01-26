@@ -1,0 +1,838 @@
+{
+  "D:\\visual studio\\System design\\url shortener\\server": {
+    "versionSfCore": null,
+    "versionFramework": "4.4.19",
+    "isWithinCompose": false,
+    "isCompose": false,
+    "composeOrgName": null,
+    "composeResolverProviders": {
+      "default-aws-credential-resolver": "<REDACTED>",
+      "sls": {
+        "instance": {
+          "credentials": "<REDACTED>",
+          "serviceConfigFile": {
+            "org": "goutham469",
+            "app": "my-express-app",
+            "service": "url-shortener",
+            "provider": {
+              "name": "aws",
+              "runtime": "nodejs18.x",
+              "region": "ap-south-1",
+              "stage": "dev",
+              "versionFunctions": true,
+              "compiledCloudFormationTemplate": {
+                "AWSTemplateFormatVersion": "2010-09-09",
+                "Description": "The AWS CloudFormation template for this Serverless application",
+                "Resources": {
+                  "AppLogGroup": {
+                    "Type": "AWS::Logs::LogGroup",
+                    "Properties": {
+                      "LogGroupName": "/aws/lambda/url-shortener-dev-app"
+                    }
+                  },
+                  "IamRoleLambdaExecution": {
+                    "Type": "AWS::IAM::Role",
+                    "Properties": {
+                      "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                          {
+                            "Effect": "Allow",
+                            "Principal": {
+                              "Service": [
+                                "lambda.amazonaws.com"
+                              ]
+                            },
+                            "Action": [
+                              "sts:AssumeRole"
+                            ]
+                          }
+                        ]
+                      },
+                      "Policies": [
+                        {
+                          "PolicyName": {
+                            "Fn::Join": [
+                              "-",
+                              [
+                                "url-shortener",
+                                "dev",
+                                "lambda"
+                              ]
+                            ]
+                          },
+                          "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                              {
+                                "Effect": "Allow",
+                                "Action": [
+                                  "logs:CreateLogStream",
+                                  "logs:CreateLogGroup",
+                                  "logs:TagResource"
+                                ],
+                                "Resource": [
+                                  {
+                                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/url-shortener-dev*:*"
+                                  }
+                                ]
+                              },
+                              {
+                                "Effect": "Allow",
+                                "Action": [
+                                  "logs:PutLogEvents"
+                                ],
+                                "Resource": [
+                                  {
+                                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/url-shortener-dev*:*:*"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "Path": "/",
+                      "RoleName": {
+                        "Fn::Join": [
+                          "-",
+                          [
+                            "url-shortener",
+                            "dev",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "lambdaRole"
+                          ]
+                        ]
+                      }
+                    }
+                  },
+                  "AppLambdaFunction": {
+                    "Type": "AWS::Lambda::Function",
+                    "Properties": {
+                      "Code": {
+                        "S3Bucket": "serverless-framework-deployments-ap-south-1-8deec114-3972",
+                        "S3Key": "serverless/url-shortener/dev/1737888928498-2025-01-26T10:55:28.498Z/url-shortener.zip"
+                      },
+                      "Handler": "dist/app.handler",
+                      "Runtime": "nodejs18.x",
+                      "FunctionName": "url-shortener-dev-app",
+                      "MemorySize": 128,
+                      "Timeout": 6,
+                      "Role": {
+                        "Fn::GetAtt": [
+                          "IamRoleLambdaExecution",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "DependsOn": [
+                      "AppLogGroup"
+                    ]
+                  },
+                  "AppLambdaVersion7PiASD59DPrY7HCRmfY6qiSPquldCIaDLz7L8mwrAo": {
+                    "Type": "AWS::Lambda::Version",
+                    "DeletionPolicy": "Retain",
+                    "Properties": {
+                      "FunctionName": {
+                        "Ref": "AppLambdaFunction"
+                      },
+                      "CodeSha256": "nknlW1uT8JvwJa08KnoISl4DgfvUQ/hqn+JvIt/edjY="
+                    }
+                  },
+                  "ApiGatewayRestApi": {
+                    "Type": "AWS::ApiGateway::RestApi",
+                    "Properties": {
+                      "Name": "dev-url-shortener",
+                      "EndpointConfiguration": {
+                        "Types": [
+                          "EDGE"
+                        ]
+                      },
+                      "Policy": ""
+                    }
+                  },
+                  "ApiGatewayResourceProxyVar": {
+                    "Type": "AWS::ApiGateway::Resource",
+                    "Properties": {
+                      "ParentId": {
+                        "Fn::GetAtt": [
+                          "ApiGatewayRestApi",
+                          "RootResourceId"
+                        ]
+                      },
+                      "PathPart": "{proxy+}",
+                      "RestApiId": {
+                        "Ref": "ApiGatewayRestApi"
+                      }
+                    }
+                  },
+                  "ApiGatewayMethodAny": {
+                    "Type": "AWS::ApiGateway::Method",
+                    "Properties": {
+                      "HttpMethod": "ANY",
+                      "RequestParameters": {},
+                      "ResourceId": {
+                        "Fn::GetAtt": [
+                          "ApiGatewayRestApi",
+                          "RootResourceId"
+                        ]
+                      },
+                      "RestApiId": {
+                        "Ref": "ApiGatewayRestApi"
+                      },
+                      "ApiKeyRequired": "<REDACTED>",
+                      "AuthorizationType": "NONE",
+                      "Integration": {
+                        "IntegrationHttpMethod": "POST",
+                        "Type": "AWS_PROXY",
+                        "Uri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "AppLambdaFunction",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        }
+                      },
+                      "MethodResponses": []
+                    },
+                    "DependsOn": [
+                      "AppLambdaPermissionApiGateway"
+                    ]
+                  },
+                  "ApiGatewayMethodProxyVarAny": {
+                    "Type": "AWS::ApiGateway::Method",
+                    "Properties": {
+                      "HttpMethod": "ANY",
+                      "RequestParameters": {},
+                      "ResourceId": {
+                        "Ref": "ApiGatewayResourceProxyVar"
+                      },
+                      "RestApiId": {
+                        "Ref": "ApiGatewayRestApi"
+                      },
+                      "ApiKeyRequired": "<REDACTED>",
+                      "AuthorizationType": "NONE",
+                      "Integration": {
+                        "IntegrationHttpMethod": "POST",
+                        "Type": "AWS_PROXY",
+                        "Uri": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":apigateway:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":lambda:path/2015-03-31/functions/",
+                              {
+                                "Fn::GetAtt": [
+                                  "AppLambdaFunction",
+                                  "Arn"
+                                ]
+                              },
+                              "/invocations"
+                            ]
+                          ]
+                        }
+                      },
+                      "MethodResponses": []
+                    },
+                    "DependsOn": [
+                      "AppLambdaPermissionApiGateway"
+                    ]
+                  },
+                  "ApiGatewayDeployment1737888915368": {
+                    "Type": "AWS::ApiGateway::Deployment",
+                    "Properties": {
+                      "RestApiId": {
+                        "Ref": "ApiGatewayRestApi"
+                      },
+                      "StageName": "dev"
+                    },
+                    "DependsOn": [
+                      "ApiGatewayMethodAny",
+                      "ApiGatewayMethodProxyVarAny"
+                    ]
+                  },
+                  "AppLambdaPermissionApiGateway": {
+                    "Type": "AWS::Lambda::Permission",
+                    "Properties": {
+                      "FunctionName": {
+                        "Fn::GetAtt": [
+                          "AppLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "Action": "lambda:InvokeFunction",
+                      "Principal": "apigateway.amazonaws.com",
+                      "SourceArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "ApiGatewayRestApi"
+                            },
+                            "/*/*"
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                "Outputs": {
+                  "ServerlessDeploymentBucketName": {
+                    "Value": "serverless-framework-deployments-ap-south-1-8deec114-3972",
+                    "Export": {
+                      "Name": "sls-url-shortener-dev-ServerlessDeploymentBucketName"
+                    }
+                  },
+                  "AppLambdaFunctionQualifiedArn": {
+                    "Description": "Current Lambda function version",
+                    "Value": {
+                      "Ref": "AppLambdaVersion7PiASD59DPrY7HCRmfY6qiSPquldCIaDLz7L8mwrAo"
+                    },
+                    "Export": {
+                      "Name": "sls-url-shortener-dev-AppLambdaFunctionQualifiedArn"
+                    }
+                  },
+                  "ServiceEndpoint": {
+                    "Description": "URL of the service endpoint",
+                    "Value": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://",
+                          {
+                            "Ref": "ApiGatewayRestApi"
+                          },
+                          ".execute-api.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/dev"
+                        ]
+                      ]
+                    },
+                    "Export": {
+                      "Name": "sls-url-shortener-dev-ServiceEndpoint"
+                    }
+                  }
+                }
+              },
+              "vpc": {}
+            },
+            "functions": {
+              "app": {
+                "handler": "dist/app.handler",
+                "memorySize": 128,
+                "events": [
+                  {
+                    "http": "ANY /"
+                  },
+                  {
+                    "http": "ANY /{proxy+}"
+                  }
+                ],
+                "name": "url-shortener-dev-app",
+                "package": {},
+                "memory": 128,
+                "timeout": 6,
+                "runtime": "nodejs18.x",
+                "vpc": {},
+                "versionLogicalId": "AppLambdaVersion7PiASD59DPrY7HCRmfY6qiSPquldCIaDLz7L8mwrAo"
+              }
+            }
+          },
+          "configFileDirPath": "D:\\visual studio\\System design\\url shortener\\server",
+          "config": {
+            "type": "sls"
+          },
+          "options": {},
+          "stage": "dev",
+          "dashboard": null,
+          "logger": {
+            "namespace": "s:core:resolver:sls",
+            "prefix": null,
+            "prefixColor": null
+          },
+          "_credentialsPromise": "<REDACTED>"
+        },
+        "resolvers": {}
+      }
+    },
+    "composeServiceName": null,
+    "servicePath": "D:\\visual studio\\System design\\url shortener\\server",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "org": "goutham469",
+      "app": "my-express-app",
+      "service": "url-shortener",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs18.x",
+        "region": "ap-south-1",
+        "stage": "dev",
+        "versionFunctions": true,
+        "compiledCloudFormationTemplate": {
+          "AWSTemplateFormatVersion": "2010-09-09",
+          "Description": "The AWS CloudFormation template for this Serverless application",
+          "Resources": {
+            "AppLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/url-shortener-dev-app"
+              }
+            },
+            "IamRoleLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "url-shortener",
+                          "dev",
+                          "lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/url-shortener-dev*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/url-shortener-dev*:*:*"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "Path": "/",
+                "RoleName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "url-shortener",
+                      "dev",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "lambdaRole"
+                    ]
+                  ]
+                }
+              }
+            },
+            "AppLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-ap-south-1-8deec114-3972",
+                  "S3Key": "serverless/url-shortener/dev/1737888928498-2025-01-26T10:55:28.498Z/url-shortener.zip"
+                },
+                "Handler": "dist/app.handler",
+                "Runtime": "nodejs18.x",
+                "FunctionName": "url-shortener-dev-app",
+                "MemorySize": 128,
+                "Timeout": 6,
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "AppLogGroup"
+              ]
+            },
+            "AppLambdaVersion7PiASD59DPrY7HCRmfY6qiSPquldCIaDLz7L8mwrAo": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "AppLambdaFunction"
+                },
+                "CodeSha256": "nknlW1uT8JvwJa08KnoISl4DgfvUQ/hqn+JvIt/edjY="
+              }
+            },
+            "ApiGatewayRestApi": {
+              "Type": "AWS::ApiGateway::RestApi",
+              "Properties": {
+                "Name": "dev-url-shortener",
+                "EndpointConfiguration": {
+                  "Types": [
+                    "EDGE"
+                  ]
+                },
+                "Policy": ""
+              }
+            },
+            "ApiGatewayResourceProxyVar": {
+              "Type": "AWS::ApiGateway::Resource",
+              "Properties": {
+                "ParentId": {
+                  "Fn::GetAtt": [
+                    "ApiGatewayRestApi",
+                    "RootResourceId"
+                  ]
+                },
+                "PathPart": "{proxy+}",
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                }
+              }
+            },
+            "ApiGatewayMethodAny": {
+              "Type": "AWS::ApiGateway::Method",
+              "Properties": {
+                "HttpMethod": "ANY",
+                "RequestParameters": {},
+                "ResourceId": {
+                  "Fn::GetAtt": [
+                    "ApiGatewayRestApi",
+                    "RootResourceId"
+                  ]
+                },
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                },
+                "ApiKeyRequired": "<REDACTED>",
+                "AuthorizationType": "NONE",
+                "Integration": {
+                  "IntegrationHttpMethod": "POST",
+                  "Type": "AWS_PROXY",
+                  "Uri": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":apigateway:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":lambda:path/2015-03-31/functions/",
+                        {
+                          "Fn::GetAtt": [
+                            "AppLambdaFunction",
+                            "Arn"
+                          ]
+                        },
+                        "/invocations"
+                      ]
+                    ]
+                  }
+                },
+                "MethodResponses": []
+              },
+              "DependsOn": [
+                "AppLambdaPermissionApiGateway"
+              ]
+            },
+            "ApiGatewayMethodProxyVarAny": {
+              "Type": "AWS::ApiGateway::Method",
+              "Properties": {
+                "HttpMethod": "ANY",
+                "RequestParameters": {},
+                "ResourceId": {
+                  "Ref": "ApiGatewayResourceProxyVar"
+                },
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                },
+                "ApiKeyRequired": "<REDACTED>",
+                "AuthorizationType": "NONE",
+                "Integration": {
+                  "IntegrationHttpMethod": "POST",
+                  "Type": "AWS_PROXY",
+                  "Uri": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":apigateway:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":lambda:path/2015-03-31/functions/",
+                        {
+                          "Fn::GetAtt": [
+                            "AppLambdaFunction",
+                            "Arn"
+                          ]
+                        },
+                        "/invocations"
+                      ]
+                    ]
+                  }
+                },
+                "MethodResponses": []
+              },
+              "DependsOn": [
+                "AppLambdaPermissionApiGateway"
+              ]
+            },
+            "ApiGatewayDeployment1737888915368": {
+              "Type": "AWS::ApiGateway::Deployment",
+              "Properties": {
+                "RestApiId": {
+                  "Ref": "ApiGatewayRestApi"
+                },
+                "StageName": "dev"
+              },
+              "DependsOn": [
+                "ApiGatewayMethodAny",
+                "ApiGatewayMethodProxyVarAny"
+              ]
+            },
+            "AppLambdaPermissionApiGateway": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "AppLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "ApiGatewayRestApi"
+                      },
+                      "/*/*"
+                    ]
+                  ]
+                }
+              }
+            }
+          },
+          "Outputs": {
+            "ServerlessDeploymentBucketName": {
+              "Value": "serverless-framework-deployments-ap-south-1-8deec114-3972",
+              "Export": {
+                "Name": "sls-url-shortener-dev-ServerlessDeploymentBucketName"
+              }
+            },
+            "AppLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "AppLambdaVersion7PiASD59DPrY7HCRmfY6qiSPquldCIaDLz7L8mwrAo"
+              },
+              "Export": {
+                "Name": "sls-url-shortener-dev-AppLambdaFunctionQualifiedArn"
+              }
+            },
+            "ServiceEndpoint": {
+              "Description": "URL of the service endpoint",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    ".execute-api.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/dev"
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "sls-url-shortener-dev-ServiceEndpoint"
+              }
+            }
+          }
+        },
+        "vpc": {}
+      },
+      "functions": {
+        "app": {
+          "handler": "dist/app.handler",
+          "memorySize": 128,
+          "events": [
+            {
+              "http": "ANY /"
+            },
+            {
+              "http": "ANY /{proxy+}"
+            }
+          ],
+          "name": "url-shortener-dev-app",
+          "package": {},
+          "memory": 128,
+          "timeout": 6,
+          "runtime": "nodejs18.x",
+          "vpc": {},
+          "versionLogicalId": "AppLambdaVersion7PiASD59DPrY7HCRmfY6qiSPquldCIaDLz7L8mwrAo"
+        }
+      }
+    },
+    "serviceRawFile": "org: goutham469\r\napp: my-express-app\r\nservice: url-shortener\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs18.x\r\n  region: ap-south-1  # Mumbai region (ap-south-1)\r\n\r\nfunctions:\r\n  app:\r\n    handler: dist/app.handler\r\n    memorySize: 128  # Memory size (128MB)\r\n    events:\r\n      - http: ANY /\r\n      - http: ANY /{proxy+}",
+    "command": [
+      "deploy"
+    ],
+    "options": {},
+    "error": null,
+    "params": {},
+    "machineId": "61da4a7c5d94c3fe3a6dbf112d5025ae",
+    "stage": "dev",
+    "accessKeyV2": "<REDACTED>",
+    "accessKeyV1": "<REDACTED>",
+    "orgId": "73bd8665-c6c2-45ef-856b-c223916ae811",
+    "orgName": "goutham469",
+    "userId": "0YCWxRHGG7745yX2Wh",
+    "dashboard": {
+      "isEnabledForService": true,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": {
+        "providers": false,
+        "monitoring": false
+      },
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": "5gVtyBNSNdj1P2kbnt",
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "userName": "goutham469",
+    "subscription": null,
+    "userEmail": "uppinurigouthamreddy@gmail.com",
+    "serviceProviderAwsRegion": "ap-south-1",
+    "serviceProviderAwsCredentials": "<REDACTED>",
+    "serviceProviderAwsAccountId": "590183855894",
+    "projectType": "traditional",
+    "versionSf": "4.4.19",
+    "serviceProviderAwsCfStackName": "url-shortener-dev",
+    "integrations": {},
+    "serviceUniqueId": "arn:aws:cloudformation:ap-south-1:590183855894:stack/url-shortener-dev/17e81490-dbd4-11ef-9f8b-02cd8a7acae1",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:ap-south-1:590183855894:stack/url-shortener-dev/17e81490-dbd4-11ef-9f8b-02cd8a7acae1",
+    "serviceProviderAwsCfStackCreated": "2025-01-26T10:55:45.323Z",
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": "CREATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "AppLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:ap-south-1:590183855894:function:url-shortener-dev-app:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-url-shortener-dev-AppLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "ServiceEndpoint",
+        "OutputValue": "https://dad4qvytuh.execute-api.ap-south-1.amazonaws.com/dev",
+        "Description": "URL of the service endpoint",
+        "ExportName": "sls-url-shortener-dev-ServiceEndpoint"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-ap-south-1-8deec114-3972",
+        "ExportName": "sls-url-shortener-dev-ServerlessDeploymentBucketName"
+      }
+    ]
+  }
+}

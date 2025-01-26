@@ -6,7 +6,7 @@ const UpdateStats = require('./MiddleWares/UpdateStats')
 const CheckUser = require('./MiddleWares/CheckUser')
 const APICounter = require('./MiddleWares/APICounter')
 
-
+const serverless = require('serverless-http');
 
 const app = exp()
 app.use(cors())
@@ -153,4 +153,5 @@ app.get('*' , async(req,res)=>{
     }
 })
 
-app.listen(4000 , ()=>{console.log("URL shortener server running on PORT 4000...")})
+
+module.exports.handler = serverless(app);

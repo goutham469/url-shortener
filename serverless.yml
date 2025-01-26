@@ -1,0 +1,16 @@
+org: goutham469
+app: my-express-app
+service: url-shortener
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-south-1  # Mumbai region (ap-south-1)
+
+functions:
+  app:
+    handler: dist/app.handler
+    memorySize: 128  # Memory size (128MB)
+    events:
+      - http: ANY /
+      - http: ANY /{proxy+}
