@@ -24,8 +24,19 @@ function App() {
   ])
 
   return (
-    <div  className="App">
-      <RouterProvider router={router}/>
+    <div style={{
+      backgroundImage: `url(${process.env.REACT_APP_CLIENT_URL}/background.png)`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      textAlign:"center",
+      margin:"0px",
+      padding:"0px",
+      width:"100vw",
+      height:"100vh",
+      overflow:"auto"
+    }}>
+      <RouterProvider router={router} />
     </div>
   );
 }

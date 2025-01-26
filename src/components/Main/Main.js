@@ -65,29 +65,10 @@ function Main() {
     }
   return (
     <div>
-      <h1>URL shortener service.</h1>
-      {!logged ? (
-        <div>
-          <h3>Login to use the service!</h3>
-          <center>
-            <GoogleLogin onSuccess={onSuccess} />
-          </center>
-        </div>
-      ) : (
-        <div>
-          <b>{localStorage.getItem('email')}</b>
-          <br />
-          <button
-            onClick={() => {
-              localStorage.removeItem('email');
-              setLogged(false);
-            }}
-          >
-            Log out
-          </button>
-        </div>
-      )}
+      <h1>Short Link</h1>
+      
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+
         <form className="Main-form">
           <input type="text" onChange={(event) => setLink(event.target.value)} placeholder="Paste the link here" />
           <br />
@@ -107,15 +88,21 @@ function Main() {
           <br />
           <button onClick={(event) => CompressLink(event)}>Compress link</button>
         </form>
-      </div>
 
-      <div style={{display:"flex",justifyContent:"space-around"}}>
-        <b style={{cursor:"pointer",textDecoration:"underline",margin:"5px"}}
-         onClick={()=>navigate('/urls')}>All urls</b>
-        <b style={{cursor:"pointer",textDecoration:"underline",margin:"5px"}}
-         onClick={()=>navigate('/stats')}>statistics</b>
-      </div>
 
+
+        <div style={{display:"flex",justifyContent:"space-around"}} className='Main-form'>
+          <b 
+            className='main-navigate-button'
+            onClick={()=>navigate('/urls')}
+          >All urls</b>
+          <b 
+            className='main-navigate-button'
+            onClick={()=>navigate('/stats')}
+          >statistics</b>
+        </div>
+
+      </div>
 
     </div>
   )

@@ -1,7 +1,4 @@
-.App {
-  text-align: center;
-  margin: 20px;
-}
+
 .Main-form{
   background-color: rgb(199, 199, 199);
   border-radius: 20px;
@@ -12,13 +9,21 @@
   width: 300px;
 }
 
+.main-navigate-button{
+  margin: 5px;
+  cursor: pointer;
+  background-color: #cccccc;
+  height: fit-content;
+  padding: 5px;
+  border-radius: 5px;
+}
+
 
 
 /* App.css */
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #f0f2f5;
   margin: 0;
   padding: 0;
   display: flex;
